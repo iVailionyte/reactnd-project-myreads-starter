@@ -34,12 +34,25 @@ class BooksApp extends React.Component {
     })
   }
   getFilteredBooks(query) {
-    BooksAPI.search(query)
-    .then((books) => {
+    if (query) {
+      BooksAPI.search(query)
+      .then((books) => {
+        if (books.error) {
+          this.setState(() => ({
+            filteredBooks: []
+          }))
+        } else { 
+          this.setState(() => ({
+            filteredBooks: books
+          }))
+        }
+      })
+    } else {
       this.setState(() => ({
-        filteredBooks: books
+        filteredBooks: []
       }))
-    })
+    }
+    
   }
 
   render() {
