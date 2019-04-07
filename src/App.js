@@ -3,6 +3,7 @@ import * as BooksAPI from './BooksAPI';
 import { Route, Link } from 'react-router-dom';
 import './App.css';
 import BooksShelf from './BooksShelf';
+import Book from './Book';
 
 class BooksApp extends React.Component {
   state = {
@@ -13,6 +14,7 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     books: [],
+    filteredBooks: [],
   }
   componentDidMount() {
     this.getBooks()
@@ -28,6 +30,14 @@ class BooksApp extends React.Component {
     .then((books) => {
       this.setState(() => ({
         books
+      }))
+    })
+  }
+  getFilteredBooks(query) {
+    BooksAPI.search(query)
+    .then((books) => {
+      this.setState(() => ({
+        filteredBooks: books
       }))
     })
   }
@@ -66,12 +76,18 @@ class BooksApp extends React.Component {
                 However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                 you don't find a specific author or title. Every search is limited by search terms.
               */}
-              <input type="text" placeholder="Search by title or author"/>
+              <input type="text" placeholder="Search by title or author" onChange={(ev) => this.getFilteredBooks(ev.target.value)}/>
 
             </div>
           </div>
           <div className="search-books-results">
-            <ol className="books-grid"></ol>
+            <ol className="books-grid">
+              {this.state.filteredBooks.map((book) => 
+                <li key={book.id}>
+                  <Book book={book} onChangeShelf={this.changeShelf} />
+                </li>
+              )}
+            </ol>
           </div>
         </div>
         )} />
